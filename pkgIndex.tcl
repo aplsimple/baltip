@@ -1,4 +1,4 @@
-package ifneeded tooltip4 0.5 [list source [file join $dir tooltip4.tcl]]
+package ifneeded tooltip4 0.6 [list source [file join $dir tooltip4.tcl]]
 
 namespace eval ::tooltip4 {
 
@@ -123,23 +123,27 @@ As seen in the above examples, the *tooltip4* can be used as Tcl ensemble, so th
 
 Below are listed the *tooltip4* options that are set with `tooltip` and `configure` and got with `cget`:
 
- **-on** - switches all tooltips on/off
- **-force** - if true, forces the display by 'tooltip' command
- **-per10** - a pause per each 10 characters of the tooltip (in millisec.); "0" means "eternal"
- **-fade** - a time of fading (in millisec.)
- **-pause** - a pause before displaying tooltips (in millisec.)
- **-alpha** - an opacity (from 0.0 to 1.0)
- **-fg** - foreground of tooltips
- **-bg** - background of tooltips
- **-bd** - borderwidth of tooltips
- **-font** - font attributes
- **-padx** - x-padding for text
- **-pady** - y-padding for text
- **-padding** - padding for pack
- **-geometry** - geometry (+X+Y) of a balloon message
+ **-on** - switches all tooltips on/off;
+ **-per10** - a time of exposition per 10 characters (in millisec.); "0" means "eternal";
+ **-fade** - a time of fading (in millisec.);
+ **-pause** - a pause before displaying tooltips (in millisec.);
+ **-alpha** - an opacity (from 0.0 to 1.0);
+ **-fg** - foreground of tooltip;
+ **-bg** - background of tooltip;
+ **-bd** - borderwidth of tooltip;
+ **-font** - font attributes;
+ **-padx** - X padding for text;
+ **-pady** - Y padding for text;
+ **-padding** - padding for pack.
+
+The following options are special:
+
+ **-force** - if true, forces the display by 'tooltip' command;
+ **-index** - index of menu item to tip;
+ **-tag** - name of text tag to tip;
+ **-geometry** - geometry (+X+Y) of the balloon.
 
 ## Links
-
 
   * [Reference](https://aplsimple.github.io/en/tcl/tooltip4/tooltip4.html)
 
@@ -149,7 +153,7 @@ You can test the *tooltip4* with *test2_pave.tcl* of the *apave* package availab
 
   * [apave package](https://chiselapp.com/user/aplsimple/repository/pave/download) (pave.zip)
 
-Note that [tooltip4](https://chiselapp.com/user/aplsimple/repository/tooltip4/download) is still disposed to updating, e.g. for now it doesn't provide the menu item tooltip as the tooltip of tklib does.
+Note that [tooltip4](https://chiselapp.com/user/aplsimple/repository/tooltip4/download) is still disposed to updating.
 }
 }
 

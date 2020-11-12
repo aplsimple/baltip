@@ -9,7 +9,7 @@
 # License: MIT.
 # _______________________________________________________________________ #
 
-package provide tooltip4 0.5
+package provide tooltip4 0.6
 
 package require Tk
 
@@ -21,9 +21,9 @@ namespace eval ::tooltip4 {
   namespace eval my {
   variable ttdata; array set ttdata [list]
   set ttdata(on) yes
-  set ttdata(wttip) "__tooltip4__"
+  set ttdata(wttip) "_tooltip4_"
   set ttdata(per10) 1600
-  set ttdata(fade) 400
+  set ttdata(fade) 300
   set ttdata(pause) 600
   set ttdata(fg) black
   set ttdata(bg) #FBFB95
@@ -42,36 +42,29 @@ namespace eval ::tooltip4 {
 proc ::tooltip4::configure {args} {
   # Configurates the tooltip for all widgets.
   #   args - options ("name value" pairs)
-  # The following options are available:
-  #    -on    - switches all tooltips on/off
-  #    -force - if true, forces the display by 'tooltip' command
-  #    -per10 - a pause for each 10 characters of the tooltip (in millisec.)
-  #    -fade  - a time of fading (in millisec.)
-  #    -pause - a pause before displaying tooltips (in millisec.)
-  #    -alpha - an opacity (from 0.0 to 1.0)
-  #    -fg    - foreground of tooltips
-  #    -bg    - background of tooltips
-  #    -bd    - borderwidth of tooltips
-  #    -font  - font attributes
-  #    -padx - x-padding for text
-  #    -pady - y-padding for text
-  #    -padding - padding for pack
-  #    -geometry - geometry (+X+Y) of the tooltip
-  # Returns the list of -force and -geometry option values.
+  # The following options are special:
+  #   -force - if true, forces the display by 'tooltip' command
+  #   -index - index of menu item to tip
+  #   -tag - name of text tag to tip
+  #   -geometry - geometry (+X+Y) of the balloon
+  # Returns the list of -force, -geometry, -index, -tag option values.
 
   set force 0
-  set geo ""
+  set index -1
+  set geometry [set tag ""]
   foreach {n v} $args {
+    set n1 [string range $n 1 end]
     switch -glob -- $n {
-      -on - -per10 - -fade - -pause - -fg - -bg - -bd - -alpha - -text - \
-      -padx - -pady - -padding {set my::ttdata([string range $n 1 end]) $v}
+      -per10 - -fade - -pause - -fg - -bg - -bd - -alpha - -text - \
+      -on - -padx - -pady - -padding {
+        set my::ttdata($n1) $v
+      }
       -font {foreach {k v} $v {dict set my::ttdata(font) $k $v}}
-      -force {set force $v}
-      -geometry {set geo $v}
+      -force - -geometry - -index - -tag {set $n1 $v}
       default {return -code error "invalid option \"$n\""}
     }
   }
-  return [list $force $geo]
+  return [list $force $geometry $index $tag]
 }
 #_____
 
@@ -82,7 +75,7 @@ proc ::tooltip4::cget {args} {
 
   if {![llength $args]} {
     lappend args -on -per10 -fade -pause -fg -bg -bd -padx -pady -padding \
-      -font -alpha -text
+      -font -alpha -text -index -tag
   }
   set res [list]
   foreach n $args {
@@ -104,8 +97,8 @@ proc ::tooltip4::tooltip {w text args} {
   if {[winfo exists $w] || $w eq ""} {
     set arrsaved [array get my::ttdata]
     set optvals [::tooltip4::my::CGet {*}$args]
-    lassign $optvals forced geo
-    set optvals [lrange $optvals 2 end]
+    lassign $optvals forced geo index ttag
+    set optvals [lrange $optvals 4 end]
     set my::ttdata(optvals,$w) [dict set optvals -text $text]
     set my::ttdata(on,$w) [expr {[string length $text]}]
     set my::ttdata(global,$w) no
@@ -118,10 +111,22 @@ proc ::tooltip4::tooltip {w text args} {
         if {[lsearch -exact $tags "Tooltip$w"] == -1} {
           bindtags $w [linsert $tags end "Tooltip$w"]
         }
-        bind Tooltip$w <Enter>        [list ::tooltip4::my::Show %W $text no $geo $optvals]
         bind Tooltip$w <Any-Leave>    [list ::tooltip4::hide $w]
         bind Tooltip$w <Any-KeyPress> [list ::tooltip4::hide $w]
         bind Tooltip$w <Any-Button>   [list ::tooltip4::hide $w]
+        if {$index>-1} {
+          set my::ttdata($w,$index) $text
+          set my::ttdata(LASTMITEM) ""
+          bind $w <<MenuSelect>> [list + ::tooltip4::my::MenuTip $w %W $optvals]
+        } elseif {$ttag ne ""} {
+          set ::tooltip4::my::ttdata($w,$ttag) "$text"
+          $w tag bind $ttag <Enter> [list + ::tooltip4::my::TagTip $w $ttag $optvals]
+          foreach event {Leave KeyPress Button} {
+            $w tag bind $ttag <$event> [list + ::tooltip4::my::TagTip $w]
+          }
+        } else {
+          bind Tooltip$w <Enter> [list ::tooltip4::my::Show %W $text no $geo $optvals]
+        }
       }
     }
   }
@@ -146,10 +151,9 @@ proc ::tooltip4::update {{w ""}} {
 proc ::tooltip4::hide {{w ""}} {
   # Destroys the tooltip's window.
   #   w - the tooltip's parent window
+  # Returns 1, if the window was really hidden.
 
-  if {[winfo exists $w] || $w eq ""} {
-    catch {destroy $w.$my::ttdata(wttip)}
-  }
+  return [expr {![catch {destroy $w.$my::ttdata(wttip)}]}]
 }
 #_____
 
@@ -203,7 +207,7 @@ proc ::tooltip4::my::ShowWindow {win geo} {
   }
   if {$geo eq ""} {
     set x [expr {max(1,$px - round($width / 2.0))}]
-    set y [expr {$py + 20 - $ady}]
+    set y [expr {$py + 16 - $ady}]
   } else {
     lassign [split $geo +] -> x y
     set x [expr [string map "W $width" $x]]  ;# W to shift horizontally
@@ -238,18 +242,16 @@ proc ::tooltip4::my::Show {w text force geo optvals} {
   } else {
     array set data $optvals
   }
-  if {!$force && $geo eq "" && ([winfo exists $win] || \
-  ![info exists ttdata(on,$w)] || !$ttdata(on,$w) || \
-  ![string match $w [winfo containing $px $py]] || \
-  !$ttdata(on) || !$data(-on))} {
+  if {!$force && $geo eq "" && [winfo class $w] ne "Menu" && \
+  ([winfo exists $win] || ![info exists ttdata(on,$w)] || !$ttdata(on,$w) || \
+  ![string match $w [winfo containing $px $py]])} {
+    set ttdata(on,$w) 1  ;# this flag is used to disable the tips temporarily
     return
   }
   ::tooltip4::hide $w
-  if {![string length [string trim $text]]} return
+  if {![string length [string trim $text]] || !$ttdata(on) || !$data(-on)} return
   lappend ttdata(REGISTERED) $w
-  foreach wold [lrange $ttdata(REGISTERED) 0 end-1] {
-    ::tooltip4::hide $wold
-  }
+  foreach wold [lrange $ttdata(REGISTERED) 0 end-1] {::tooltip4::hide $wold}
   toplevel $win -bg $data(-bg) -class Tooltip$w
   catch {wm withdraw $win}
   wm overrideredirect $win 1
@@ -259,11 +261,13 @@ proc ::tooltip4::my::Show {w text force geo optvals} {
     -padx $data(-padx) -pady $data(-pady)] -padx $data(-padding) -pady $data(-padding)
   # defeat rare artifact by passing mouse over a tooltip to destroy it
   bindtags $win "Tooltip$win"
-  bind Tooltip$win <Enter>    [list ::tooltip4::hide $w]
-  bind Tooltip$win <Button>   [list ::tooltip4::hide $w]
+  bind $win <Any-Enter>  [list ::tooltip4::hide $w]
+  bind Tooltip$win <Any-Enter>  [list ::tooltip4::hide $w]
+  bind Tooltip$win <Any-Button> [list ::tooltip4::hide $w]
   set aint 20
   set fint [expr {int($data(-fade)/$aint)}]
   set icount [expr {int($data(-per10)/$aint*[string length $text]/10.0)}]
+  set icount [expr {max(1000/$aint+1,$icount)}] ;# ~1 sec. be minimal
   if {$icount} {
     if {$geo eq ""} {
       catch {wm attributes $win -alpha $data(-alpha)}
@@ -281,7 +285,40 @@ proc ::tooltip4::my::Show {w text force geo optvals} {
 }
 #_____
 
-proc ::tooltip4::my::Fade {w aint fint icount Un alpha geo show} {
+proc ::tooltip4::my::MenuTip {w wt optvals} {
+  # Shows a menu's tooltip.
+  #   w - the menu's path
+  #   wt - the menu's path (incl. tearoff menu)
+  #   optvals - settings of tooltip
+
+  variable ttdata
+  ::tooltip4::hide $w
+  set index [$wt index active]
+  set mit "$w/$index"
+  if {$index eq "none"} return
+	if {[info exists ttdata($w,$index)] && ([::tooltip4::hide $w] || \
+  ![info exists ttdata(LASTMITEM)] || $ttdata(LASTMITEM) ne $mit)} {
+    set text $ttdata($w,$index)
+    ::tooltip4::my::Show $w $text no {} $optvals
+  }
+	set ttdata(LASTMITEM) $mit
+}
+#_____
+
+proc ::tooltip4::my::TagTip {w {tag ""} {optvals ""}} {
+  # Shows a text tag's tooltip.
+  #   w - the text's path
+  #   tag - the tag's name
+  #   optvals - settings of tooltip
+
+  variable ttdata
+  ::tooltip4::hide $w
+  if {$tag eq ""} return
+  ::tooltip4::my::Show $w $ttdata($w,$tag) no {} $optvals
+}
+#_____
+
+proc ::tooltip4::my::Fade {w aint fint icount Un alpha geo show {geo2 ""}} {
   # Fades/unfades the tooltip's window.
   #   w - the tooltip's window
   #   aint - interval for 'after'
@@ -296,12 +333,12 @@ proc ::tooltip4::my::Fade {w aint fint icount Un alpha geo show} {
   update
   if {[winfo exists $w]} {
     after idle [list after $aint \
-      [list ::tooltip4::my::${Un}FadeNext $w $aint $fint $icount $alpha $geo $show]]
+      [list ::tooltip4::my::${Un}FadeNext $w $aint $fint $icount $alpha $geo $show $geo2]]
   }
 }
 #_____
 
-proc ::tooltip4::my::FadeNext {w aint fint icount alpha geo show} {
+proc ::tooltip4::my::FadeNext {w aint fint icount alpha geo show {geo2 ""}} {
   # A step to fade the tooltip's window.
   #   w - the tooltip's window
   #   aint - interval for 'after'
@@ -313,10 +350,11 @@ proc ::tooltip4::my::FadeNext {w aint fint icount alpha geo show} {
   # See also: Fade
 
   incr icount -1
-  if {$show} {
-    ShowWindow $w $geo
-    set show 0
-  }
+  if {$show} {ShowWindow $w $geo}
+  set show 0
+  if {![winfo exists $w]} return
+  lassign [split [wm geometry $w] +] -> X Y
+  if {$geo2 ne "" && $geo2 ne "+$X+$Y"} return
   if {$icount<0} {
     set al [expr {min($alpha,($fint+$icount*1.5)/$fint)}]
     if {$al>0} {
@@ -327,12 +365,12 @@ proc ::tooltip4::my::FadeNext {w aint fint icount alpha geo show} {
       return
     }
   }
-  Fade $w $aint $fint $icount {} $alpha $geo $show
+  Fade $w $aint $fint $icount {} $alpha $geo $show +$X+$Y
 }
 #_____
 
-proc ::tooltip4::my::UnFadeNext {w aint fint icount alpha geo show} {
-  # A step to unfade the tooltip's window.
+proc ::tooltip4::my::UnFadeNext {w aint fint icount alpha geo show {geo2 ""}} {
+  # A step to unfade the balloon's window.
   #   w - the tooltip's window
   #   aint - interval for 'after'
   #   fint - interval for fading
@@ -355,4 +393,5 @@ proc ::tooltip4::my::UnFadeNext {w aint fint icount alpha geo show} {
 }
 
 # ________________________________ EOF __________________________________ #
-#RUNF1: ../tests/test2_pave.tcl
+#RUNF1: ./test.tcl
+#RUNF2: ../tests/test2_pave.tcl
