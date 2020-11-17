@@ -399,12 +399,12 @@ proc ::baltip::my::MenuTip {w wt optvals} {
   set index [$wt index active]
   set mit "$w/$index"
   if {$index eq "none"} return
-	if {[info exists ttdata($w,$index)] && ([::baltip::hide $w] || \
+  if {[info exists ttdata($w,$index)] && ([::baltip::hide $w] || \
   ![info exists ttdata(LASTMITEM)] || $ttdata(LASTMITEM) ne $mit)} {
     set text $ttdata($w,$index)
     ::baltip::my::Show $w $text no {} $optvals
   }
-	set ttdata(LASTMITEM) $mit
+  set ttdata(LASTMITEM) $mit
 }
 #_____
 
