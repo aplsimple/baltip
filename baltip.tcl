@@ -9,7 +9,7 @@
 # License: MIT.
 # _______________________________________________________________________ #
 
-package provide baltip 1.0.4
+package provide baltip 1.0.5
 
 package require Tk
 
@@ -68,7 +68,7 @@ proc ::baltip::configure {args} {
   }
   return [list $force $geometry $index $tag]
 }
-#_____
+#_______________________
 
 proc ::baltip::cget {args} {
   # Gets the tip's option values.
@@ -89,7 +89,7 @@ proc ::baltip::cget {args} {
   }
   return $res
 }
-#_____
+#_______________________
 
 proc ::baltip::tip {w text args} {
   # Creates a tip for a widget.
@@ -136,7 +136,7 @@ proc ::baltip::tip {w text args} {
     }
   }
 }
-#_____
+#_______________________
 
 proc ::baltip::update {w text args} {
   # Updates tip's text and settings.
@@ -148,7 +148,7 @@ proc ::baltip::update {w text args} {
   set my::ttdata(text,$w) $text
   foreach {k v} $args {set my::ttdata([string range $k 1 end],$w) $v}
 }
-#_____
+#_______________________
 
 proc ::baltip::hide {{w ""}} {
   # Destroys the tip's window.
@@ -157,7 +157,7 @@ proc ::baltip::hide {{w ""}} {
 
   return [expr {![catch {destroy $w.w__BALTIP}]}]
 }
-#_____
+#_______________________
 
 proc ::baltip::repaint {w args} {
   # Repaints a tip immediately.
@@ -191,7 +191,7 @@ proc ::baltip::my::CGet {args} {
   array set ttdata $saved
   return $res
 }
-#_____
+#_______________________
 
 proc ::baltip::my::ShowWindow {win} {
   # Shows a window of tip.
@@ -216,24 +216,23 @@ proc ::baltip::my::ShowWindow {win} {
       if {![string match $w [winfo containing $px $py]]} break
     }
   }
-  if {$geo eq ""} {
+  if {$geo eq {}} {
     set x [expr {max(1,$px - round($width / 2.0))}]
     set y [expr {$under>=0 ? ($py + $under) : ($py - $under - $ady)}]
   } else {
     lassign [split $geo +] -> x y
     set x [expr [string map "W $width" $x]]  ;# W to shift horizontally
     set y [expr [string map "H $height" $y]] ;# H to shift vertically
-    set py [expr {$y-16}]
   }
   # check for edges of screen incl. decors
   set scrw [winfo screenwidth .]
   set scrh [winfo screenheight .]
   if {($x + $width) > $scrw}  {set x [expr {$scrw - $width - 1}]}
-  if {($y + $height) > ($scrh-36)} {set y [expr {$py - $wheight - $height}]}
+  if {($y + $height) > $scrh} {set y [expr {$py - $height - 16}]}
   wm geometry $win [join  "$width x $height + $x + $y" {}]
   catch {wm deiconify $win ; raise $win}
 }
-#_____
+#_______________________
 
 proc ::baltip::my::Show {w text force geo optvals} {
   # Creates and shows the tip's window.
@@ -320,7 +319,7 @@ proc ::baltip::my::Show {w text force geo optvals} {
   if {$data(-bell)} [list after [expr {$data(-pause)/4}] bell]
   array unset data
 }
-#_____
+#_______________________
 
 proc ::baltip::my::Fade {w aint fint icount Un alpha show geo {geos ""}} {
   # Fades/unfades the tip's window.
@@ -343,7 +342,7 @@ proc ::baltip::my::Fade {w aint fint icount Un alpha show geo {geos ""}} {
       [list ::baltip::my::${Un}FadeNext $w $aint $fint $icount $alpha $show $geo $geos]]]
   }
 }
-#_____
+#_______________________
 
 proc ::baltip::my::FadeNext {w aint fint icount alpha show geo {geos ""}} {
   # A step to fade the tip's window.
@@ -380,7 +379,7 @@ proc ::baltip::my::FadeNext {w aint fint icount alpha show geo {geos ""}} {
   }
   Fade $w $aint $fint $icount {} $alpha $show $geo +$X+$Y
 }
-#_____
+#_______________________
 
 proc ::baltip::my::UnFadeNext {w aint fint icount alpha show geo {geos ""}} {
   # A step to unfade the balloon's window.
@@ -405,7 +404,7 @@ proc ::baltip::my::UnFadeNext {w aint fint icount alpha show geo {geos ""}} {
     Fade $w $aint $fint $icount Un $alpha 0 $geo
   }
 }
-#_____
+#_______________________
 
 proc ::baltip::my::MenuTip {w wt optvals} {
   # Shows a menu's tip.
@@ -425,7 +424,7 @@ proc ::baltip::my::MenuTip {w wt optvals} {
   }
   set ttdata(LASTMITEM) $mit
 }
-#_____
+#_______________________
 
 proc ::baltip::my::TagTip {w {tag ""} {optvals ""}} {
   # Shows a text tag's tip.
