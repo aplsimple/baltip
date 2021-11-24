@@ -108,7 +108,10 @@ $m add command -label "Exit" -command {exit}
 set m .menu.help
 menu $m -tearoff 0
 .menu add cascade -label "Help" -menu $m -underline 0
-$m add command -label "About" -command {puts "baltip v[package require baltip]"}
+$m add command -label "About" -command { \
+  puts "\nWelcome to baltip v[package require baltip] at \
+    \n  https://chiselapp.com/user/aplsimple \
+    \n  https://github.com/aplsimple\n"}
 
 text .t -width 24 -height 4
 .t insert 1.0 "1st line: tag1\n2nd line: tag2\n3rd line: no tags"
@@ -125,7 +128,7 @@ pack .b .l .b2 .t .cb
 
 ::baltip::configure -per10 1200 -fade 300 -font {-size 11}
 ::baltip::tip .b "Hello, world!\nIt's me o Lord!" -under 0 -per10 3000 \
-  -fg #a40000 -bg #79fe79 -font {-weight bold -size 12} \
+  -fg #a40000 -bg #bafaba -font {-weight bold -size 12} \
   -image TEST_TCL_IMAGE1 -compound left
 ::baltip::tip .l "Calls a popup tearoff menu.\nThis tip is switched by the button\nto an alert/message."
 ::baltip::tip .b2 "Displays a message at top right corner, having\

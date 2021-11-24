@@ -9,7 +9,7 @@
 # License: MIT.
 # _______________________________________________________________________ #
 
-package provide baltip 1.1.2
+package provide baltip 1.2.0
 
 package require Tk
 
@@ -45,12 +45,12 @@ namespace eval ::baltip {
 proc ::baltip::configure {args} {
   # Configurates the tip for all widgets.
   #   args - options ("name value" pairs)
-  # Returns the list of -force, -geometry, -index, -tag option values.
+  # Returns the list of special options' values.
 
   variable my::ttdata
   set force no
   set index -1
-  set geometry [set tag {}]
+  lassign {} geometry tag ctag nbktab
   set global [expr {[dict exists $args -global] && [dict get $args -global]}]
   foreach {n v} $args {
     set n1 [string range $n 1 end]
@@ -59,7 +59,9 @@ proc ::baltip::configure {args} {
       -on - -padx - -pady - -padding - -bell - -under - -font - -image - -compound {
         set my::ttdata($n1) $v
       }
-      -force - -geometry - -index - -tag - -global {set $n1 $v}
+      -force - -geometry - -index - -tag - -global - -ctag - -nbktab {
+        set $n1 $v
+      }
       default {return -code error "baltip: invalid option \"$n\""}
     }
     if {$global && ($n ne {-global} || [llength $args]==2)} {
@@ -69,7 +71,7 @@ proc ::baltip::configure {args} {
       }
     }
   }
-  return [list $force $geometry $index $tag]
+  return [list $force $geometry $index $tag $ctag $nbktab]
 }
 #_______________________
 
@@ -81,7 +83,8 @@ proc ::baltip::cget {args} {
   variable my::ttdata
   if {![llength $args]} {
     lappend args -on -per10 -fade -pause -fg -bg -bd -padx -pady -padding \
-      -font -alpha -text -index -tag -bell -under -image -compound -relief
+      -font -alpha -text -index -tag -bell -under -image -compound -relief \
+      -ctag -nbktab
   }
   set res [list]
   foreach n $args {
@@ -105,15 +108,18 @@ proc ::baltip::tip {w text args} {
   if {[winfo exists $w] || $w eq {}} {
     set arrsaved [array get my::ttdata]
     set optvals [::baltip::my::CGet {*}$args]
-    lassign $optvals forced geo index ttag
-    set optvals [lrange $optvals 4 end]
+    # block of related lines for special options
+    lassign $optvals forced geo index ttag ctag nbktab
+    set optvals [lrange $optvals 6 end]  ;# get rid of special options
+    # end of block
     set my::ttdata(optvals,$w) [dict set optvals -text $text]
-    set my::ttdata(on,$w) [expr {[string length $text]}]
+    set my::ttdata(on,$w) [expr {[string length $text] && $my::ttdata(on)}]
     set my::ttdata(global,$w) no
     if {$text ne {}} {
       if {$forced || $geo ne {}} {::baltip::my::Show $w $text yes $geo $optvals}
       if {$geo ne {}} {
-        array set my::ttdata $arrsaved  ;# balloon popup
+        # balloon popup message
+        array set my::ttdata $arrsaved
       } else {
         set tags [bindtags $w]
         if {[lsearch -exact $tags "Tooltip$w"] == -1} {
@@ -123,15 +129,28 @@ proc ::baltip::tip {w text args} {
         bind Tooltip$w <Any-KeyPress> [list ::baltip::hide $w]
         bind Tooltip$w <Any-Button>   [list ::baltip::hide $w]
         if {$index>-1} {
+          # tip for menu items
           set my::ttdata($w,$index) $text
           set my::ttdata(LASTMITEM) {}
           bind $w <<MenuSelect>> [list + ::baltip::my::MenuTip $w %W $optvals]
         } elseif {$ttag ne {}} {
-          set my::ttdata($w,$ttag) "$text"
+          # tip for text tags
+          set my::ttdata($w,$ttag) $text
           $w tag bind $ttag <Enter> [list + ::baltip::my::TagTip $w $ttag $optvals]
           foreach event {Leave KeyPress Button} {
             $w tag bind $ttag <$event> [list + ::baltip::my::TagTip $w]
           }
+        } elseif {$ctag ne {}} {
+          # tip for canvas tags
+          set my::ttdata($w,$ctag) $text
+          $w bind $ctag <Enter> [list + ::baltip::my::TagTip $w $ctag $optvals]
+          foreach event {Leave} {
+            $w bind $ctag <$event> [list + ::baltip::my::TagTip $w]
+          }
+        } elseif {$nbktab ne {}} {
+          # tip for notebook tabs
+          my::SetProperty nbkTip$nbktab $text
+          bind $w <Motion> "::baltip::my::PrepareNbkTip $w %x %y"
         } else {
           bind Tooltip$w <Enter> [list ::baltip::my::Show %W $text no $geo $optvals]
         }
@@ -451,7 +470,89 @@ proc ::baltip::my::TagTip {w {tag ""} {optvals ""}} {
   if {$tag eq {}} return
   ::baltip::my::Show $w $ttdata($w,$tag) no {} $optvals
 }
+#_______________________
+
+proc ::baltip::my::GetProperty {name {defvalue ""}} {
+  # Gets a property's value as "application-wide".
+  #   name - name of property
+  #   defvalue - default value
+  # If the property had been set, the method returns its value.
+  # Otherwise, the method returns the default value (`$defvalue`).
+
+  variable ttdata
+  if {[info exists ttdata($name)]} {
+    return $ttdata($name)
+  }
+  return $defvalue
+}
+#_______________________
+
+proc ::baltip::my::SetProperty {name args} {
+  # Sets a property's value.
+  #   name - name of property
+  #   args - value of property
+  # If *args* is omitted, the method returns a property's value.
+  # If *args* is set, the method sets a property's value as $args.
+
+  variable ttdata
+  switch [llength $args] {
+    0 {return [GetProperty $name]}
+    1 {return [set ttdata($name) [lindex $args 0]]}
+  }
+  return {}
+}
+#_______________________
+
+proc ::baltip::my::ShowNbkTip {w tip} {
+  # Shows a tip for a notebook tab.
+  #   w - the notebook's path
+  #   tip - text of tip
+
+  catch {
+    set x [expr {[winfo pointerx $w]-[winfo rootx $w]}]
+    set y [expr {[winfo pointery $w]-[winfo rooty $w]}]
+    set tab [$w identify tab $x $y]
+    set wt [lindex [$w tabs] $tab]
+    if {[lsearch -exact [$w tabs] $wt]>-1} {
+      ::baltip tip $w $tip -force yes
+    } else {
+      ::baltip hide $w
+    }
+  }
+}
+#_______________________
+
+proc ::baltip::my::PrepareNbkTip {w x y} {
+  # Prepares a tip for a notebook tab.
+  #   w - the notebook's path
+  #   x - X coordinate of pointer
+  #   y - Y coordinate of pointer
+  # The baltip isn't directly usable with notebook tabs
+  # because they have not Enter/Leave event bindings.
+  # This proc tries to imitate those events, with binding to <Motion> event.
+
+  if {![string is integer -strict $x]} return
+  catch {
+    ::baltip hide $w
+    lassign [::baltip cget -pause] -> pause
+    set propname nbkTip$w
+    set tab [$w identify tab $x $y]
+    set tab2 [GetProperty $propname]
+    set nbktab [lindex [$w tabs] $tab]
+    if {$tab ne {} && $tab ne $tab2} {
+      set tip [GetProperty nbkTip$nbktab]
+      set propafter nbkTipAfter$w
+      catch {
+        after cancel [GetProperty $propafter]
+      }
+      set aftid [after $pause "::baltip::my::ShowNbkTip $w {$tip}"]
+      SetProperty $propafter $aftid
+    }
+    SetProperty $propname $tab
+  }
+}
 
 # ________________________________ EOF __________________________________ #
 #RUNF1: ./test.tcl
 #RUNF2: ../tests/test2_pave.tcl
+

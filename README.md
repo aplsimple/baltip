@@ -8,6 +8,7 @@ The original code has been modified to make the tip:
 
   * be faded/destroyed after an interval defined by a caller
   * be enabled/disabled for all or specific widgets
+  * be usable with labels, menus, text tags, canvas tags, notebook tabs etc.
   * be displayed at the screen's edges
   * be displayed under the host widget
   * be displayed as a stand-alone balloon message at given coordinates
@@ -16,7 +17,7 @@ The original code has been modified to make the tip:
   * have configure/cget etc. wrapped in Tcl ensemble for convenience
 
 The video introduction to *baltip* is presented by
- [baltip-1.1.mp4](https://github.com/aplsimple/baltip/releases/download/baltip-1.1/baltip-1.1.mp4) (13 Mb).
+ [baltip-1.2.mp4](https://github.com/aplsimple/baltip/releases/download/baltip-1.2/baltip-1.2.mp4) (15 Mb).
 
 Below are several pictures just to glance at *baltip*.
 
@@ -166,6 +167,8 @@ The following options are special:
  * `-force` - if true, forces the display by 'tip' command;
  * `-index` - index of menu item to tip;
  * `-tag` - name of text tag to tip;
+ * `-ctag` - name of canvas tag to tip;
+ * `-nbktab` - path to ttk::notebook tab to tip;
  * `-geometry` - geometry (+X+Y) of the balloon.
 
 If `-global yes` option is used alone, it applies all global options to all registered tips. If `-global yes` option is used along with other options, only those options are applied to all registered tips.
@@ -194,4 +197,4 @@ Also, you can test *baltip* with *test2_pave.tcl* of [apave package](https://chi
 
   * [Reference](https://aplsimple.github.io/en/tcl/baltip/baltip.html)
 
-  * [Demo of baltip v1.1](https://github.com/aplsimple/baltip/releases/download/baltip-1.1/baltip-1.1.mp4)
+  * [Demo of baltip v1.2](https://github.com/aplsimple/baltip/releases/download/baltip-1.2/baltip-1.2.mp4)
