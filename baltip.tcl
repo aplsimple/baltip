@@ -7,7 +7,7 @@
 # License: MIT.
 ###########################################################
 
-package provide baltip 1.3.0
+package provide baltip 1.3.0.1
 
 package require Tk
 
@@ -140,21 +140,21 @@ proc ::baltip::tip {w text args} {
         bind Tooltip$w <Any-Button>   "::baltip::hide $w"
         if {$index>-1} {
           # tip for menu items
-          set my::ttdata($w,$index) $text
+          set my::ttdata($w,$index) $optvals
           set my::ttdata(LASTMITEM) {}
-          bind $w <<MenuSelect>> [list + ::baltip::my::MenuTip $w %W $optvals]
+          my::BindToEvent $w <<MenuSelect>> ::baltip::my::MenuTip $w %W
         } elseif {$ttag ne {}} {
           # tip for text tags
           set my::ttdata($w,$ttag) $text
-          $w tag bind $ttag <Enter> [list + ::baltip::my::TagTip $w $ttag $optvals]
+          my::BindTextagToEvent $w $ttag <Enter> ::baltip::my::TagTip $w $ttag $optvals
           foreach event {Leave KeyPress Button} {
-            $w tag bind $ttag <$event> [list + ::baltip::my::TagTip $w]
+            my::BindTextagToEvent $w $ttag <$event> ::baltip::my::TagTip $w
           }
         } elseif {$ctag ne {}} {
           # tip for canvas tags
           set my::ttdata($w,$ctag) $text
-          $w bind $ctag <Enter> [list + ::baltip::my::TagTip $w $ctag $optvals]
-          $w bind $ctag <Leave> [list + ::baltip::my::TagTip $w]
+          my::BindCantagToEvent $w $ctag <Enter> ::baltip::my::TagTip $w $ctag $optvals
+          my::BindCantagToEvent $w $ctag <Leave> ::baltip::my::TagTip $w
         } elseif {$nbktab ne {}} {
           # tip for notebook tabs
           configure -SPECTIP$nbktab $text
@@ -262,6 +262,49 @@ proc ::baltip::my::WidCoord {w} {
   lassign [split [winfo geometry $w] x+] width height
   set inside [expr {$x>-1 && $x<$width && $y>-1 && $y<$height}]
   return [list $x $y $inside]
+}
+
+## ________________________ Binds _________________________ ##
+
+
+proc ::baltip::my::BindToEvent {w event args} {
+  # Binds an event on a widget to a command.
+  #   w - the widget's path
+  #   event - the event
+  #   args - the command
+
+  if {[string first $args [bind $w $event]]<0} {
+    bind $w $event [list + {*}$args]
+  }
+}
+
+#_______________________
+
+proc ::baltip::my::BindTextagToEvent {w tag event args} {
+  # Binds an event on a text tag to a command.
+  #   w - the widget's path
+  #   tag - the tag
+  #   event - the event
+  #   args - the command
+
+  if {[string first $args [$w tag bind $tag]]<0} {
+    $w tag bind $tag $event [list + {*}$args]
+  }
+}
+
+#_______________________
+
+proc ::baltip::my::BindCantagToEvent {w tag event args} {
+  # Binds an event on a canvas tag to a command.
+  #   w - the widget's path
+  #   tag - the tag
+  #   event - the event
+  #   args - the command
+
+  if {[catch {set bound [$w bind $tag $event]}]} {set bound {}}
+  if {[string first $args $bound]<0} {
+    $w bind $tag $event [list + {*}$args]
+  }
 }
 
 ## ________________________ Show _________________________ ##
@@ -511,11 +554,10 @@ proc ::baltip::my::TagTip {w {tag ""} {optvals ""}} {
 
 ### ________________________ Menu _________________________ ###
 
-proc ::baltip::my::MenuTip {w wt optvals} {
+proc ::baltip::my::MenuTip {w wt} {
   # Shows a menu's tip.
   #   w - the menu's path
   #   wt - the menu's path (incl. tearoff menu)
-  #   optvals - settings of tip
 
   variable ttdata
   ::baltip::hide $w
@@ -524,7 +566,8 @@ proc ::baltip::my::MenuTip {w wt optvals} {
   if {$index eq {none}} return
   if {[info exists ttdata($w,$index)] && ([::baltip::hide $w] || \
   ![info exists ttdata(LASTMITEM)] || $ttdata(LASTMITEM) ne $mit)} {
-    set text $ttdata($w,$index)
+    set optvals $ttdata($w,$index)
+    set text [dict get $optvals -text]
     ::baltip::my::Show $w $text no {} $optvals
   }
   set ttdata(LASTMITEM) $mit
@@ -750,5 +793,8 @@ proc ::baltip::my::PrepareTreTip {w x y} {
 }
 
 # ________________________________ EOF __________________________________ #
+
+#EXEC1: ~/PG/github/freewrap/tclkit-8.6.11 /home/apl/PG/github/pave/tests/test2_pave.tcl
 #RUNF1: ./test.tcl
 #RUNF2: ../tests/test2_pave.tcl
+#EXEC1: ~/PG/github/freewrap/tclkit-8.6.11 /home/apl/PG/github/baltip/test.tcl
