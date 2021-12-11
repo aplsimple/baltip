@@ -6,7 +6,7 @@
 # License: MIT.
 ###########################################################
 
-package provide baltip 1.3.2
+package provide baltip 1.3.3
 
 package require Tk
 
@@ -142,6 +142,7 @@ proc ::baltip::tip {w text args} {
       if {$geo ne {}} {
         # balloon popup message
         array set my::ttdata $arrsaved
+        bind Tooltip$w <Motion> "::baltip::hide $w yes"
       } else {
         set widgetclass [winfo class $w]
         set tags [bindtags $w]
@@ -232,16 +233,19 @@ proc ::baltip::repaint {w args} {
 }
 #_______________________
 
-proc ::baltip::hide {{w ""}} {
+proc ::baltip::hide {{w ""} {doit no}} {
   # Destroys the tip's window.
   #   w - widget's path
+  #   doit - yes, if do hide by force
   # Returns 1, if the window was really hidden.
 
   variable my::ttdata
   variable my::GEOACTIVE
-  if {$w eq $my::GEOACTIVE || $w eq {}} {
+  if {$w eq $my::GEOACTIVE || $w eq {} || $doit} {
     ;# unlock tips after a balloon message
     set my::GEOACTIVE {-}
+  } elseif {$my::GEOACTIVE ne {-}} {
+    return no
   }
   my::Command $w {}
   return [expr {![catch {destroy [tippath $w]}]}]
@@ -267,6 +271,7 @@ proc ::baltip::sleep {msec} {
   configure -on no
   after $msec "::baltip::configure -on yes"
 }
+
 # _____________________ Internals ____________________ #
 
 proc ::baltip::my::CGet {args} {
@@ -505,6 +510,7 @@ proc ::baltip::my::Show {w text force geo optvals} {
     set data(-fg) black
     set data(-bg) #FBFB95
   }
+  catch {destroy $win}
   toplevel $win -bg $data(-bg) -class Tooltip$w
   catch {wm withdraw $win}
   wm overrideredirect $win 1
