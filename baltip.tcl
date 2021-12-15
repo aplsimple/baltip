@@ -6,7 +6,7 @@
 # License: MIT.
 ###########################################################
 
-package provide baltip 1.3.3
+package provide baltip 1.3.4
 
 package require Tk
 
@@ -178,6 +178,7 @@ proc ::baltip::tip {w text args} {
         } elseif {$nbktab ne {}} {
           # tip for notebook tabs
           configure -SPECTIP$nbktab $text
+          bind Tooltip$w <Button-1> "::baltip::my::NbkInfo $w %x %y -"
           bind Tooltip$w <Motion> "::baltip::my::PrepareNbkTip $w %x %y"
         } elseif {$widgetclass eq {Listbox}} {
           # tip for listbox items
@@ -692,6 +693,25 @@ proc ::baltip::my::MenuTip {wt} {
 
 ### ________________________ Notebook _________________________ ###
 
+proc ::baltip::my::NbkInfo {w x y {tab {}}} {
+  # Gets/sets a notebook tab's data.
+  #   w - the notebook's path
+  #   x - X coordinate of pointer
+  #   y - Y coordinate of pointer
+  #   tab - a current tab
+  # When getting, returns a list of a current tab and a saved tab.
+
+  set optid -SPECTIP$w
+  if {$tab eq {}} {
+    set tab [$w identify tab $x $y]
+    set tab2 [lindex [::baltip cget $optid] 1]
+    return [list $tab $tab2]
+  }
+  ::baltip configure $optid $tab
+}
+
+#_______________________
+
 proc ::baltip::my::ShowNbkTip {w tip} {
   # Shows a tip for a notebook tab.
   #   w - the notebook's path
@@ -700,9 +720,9 @@ proc ::baltip::my::ShowNbkTip {w tip} {
   catch {
     set x [expr {[winfo pointerx $w]-[winfo rootx $w]}]
     set y [expr {[winfo pointery $w]-[winfo rooty $w]}]
-    set tab [$w identify tab $x $y]
+    lassign [NbkInfo $w $x $y] tab tab2
     set wt [lindex [$w tabs] $tab]
-    if {[lsearch -exact [$w tabs] $wt]>-1} {
+    if {$tab2 ne {-} && [lsearch -exact [$w tabs] $wt]>-1} {
       ::baltip tip $w $tip -force yes
     } else {
       ::baltip hide $w
@@ -724,11 +744,9 @@ proc ::baltip::my::PrepareNbkTip {w x y} {
   if {![string is integer -strict $x]} return
   catch {
     lassign [::baltip cget -pause] -> pause
-    set optid -SPECTIP$w
-    set tab [$w identify tab $x $y]
-    lassign [::baltip cget $optid] -> tab2
+    lassign [NbkInfo $w $x $y] tab tab2
     set nbktab [lindex [$w tabs] $tab]
-    if {$tab ne {} && $tab ne $tab2} {
+    if {$tab ne {} && $tab2 ni "$tab -"} {
       ::baltip hide $w
       lassign [::baltip cget -SPECTIP$nbktab] -> tip
       if {![Command $w $tip]} {
@@ -739,8 +757,10 @@ proc ::baltip::my::PrepareNbkTip {w x y} {
         set aftid [after $pause "::baltip::my::ShowNbkTip $w {$tip}"]
         ::baltip configure $optafter $aftid
       }
+    } else {
+      NbkInfo $w $x $y -1
     }
-    ::baltip configure $optid $tab
+    NbkInfo $w $x $y $tab
   }
 }
 
@@ -792,7 +812,6 @@ proc ::baltip::my::ShowLbxTip {w optid idx whole} {
       set tip [LbxTip $w $idx $whole]
       ::baltip configure $optid $idx
       ::baltip tip $w $tip -force yes
-      ::baltip repaint $w
     } else {
       ::baltip hide $w
       ::baltip configure $optid {}
@@ -894,7 +913,6 @@ proc ::baltip::my::ShowTreTip {w optid id whole} {
       set tip [TreTip $w $id $c $whole]
       ::baltip configure $optid [list $id $c]
       ::baltip tip $w $tip -force yes
-      ::baltip repaint $w
     } else {
       ::baltip hide $w
       ::baltip configure $optid {}
@@ -951,5 +969,5 @@ proc ::baltip::my::PrepareTreTip {w x y} {
 
 #RUNF1: ./test.tcl
 #RUNF2: ../tests/test2_pave.tcl
-#EXEC1: ~/PG/github/freewrap/tclkit-8.6.11 /home/apl/PG/github/pave/tests/test2_pave.tcl
 #EXEC1: ~/PG/github/freewrap/tclkit-8.6.11 /home/apl/PG/github/baltip/test.tcl
+#EXEC2: ~/PG/github/freewrap/tclkit-8.6.11 /home/apl/PG/github/pave/tests/test2_pave.tcl
