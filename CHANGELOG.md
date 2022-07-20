@@ -1,6 +1,11 @@
 # LAST CHANGES:
 
 
+Version `1.3.8 (20 Jul'22)`
+
+  - CHANGE: -command option: resulting text defines the tip's exposition
+
+
 Version `1.3.7 (1 Jun'22)`
 
   - CHANGE: baltip::my::Bind*: command can be ended with " ; break"
