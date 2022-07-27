@@ -20,6 +20,7 @@ proc ::butComm {} {
   ::baltip hide .b
   if {[incr ::ttt]%2} {
     puts "the button's tip disabled"; bell
+    ::Status "Tip for listbox/treeview as a whole"
     ::baltip::tip .lb "Listbox tip:\nfor a lisbox as a whole.\n%%i used." -reset yes
     ::baltip::tip .tre "Treeview tip:\nfor a treeview as a whole.\n%%i, %%c used." -reset yes
     ::baltip tip .b "" -image TEST_TCL_IMAGE1 -compound right
@@ -27,6 +28,7 @@ proc ::butComm {} {
       -per10 0 -fg white -bg red -font {-weight bold} -padx 20 -pady 15 -global 0
   } else {
     puts "the button's tip enabled"; bell
+    ::Status "Tips for listbox/treeview per items"
     ::baltip::tip .lb {::LbxTip %i} -reset yes
     ::baltip::tip .tre {::TreTip %i %c} -reset yes
     if $::ttt>1 {
@@ -168,7 +170,7 @@ foreach idx {0 1 2 3 4 5} {
 set ::on 1
 checkbutton .cb -text "Tips on" -variable ::on -command ::chbComm
 
-label .status -relief sunken -anchor w
+label .status -relief sunken -anchor w -width 31
 
 # _____________________________________ Pack _____________________________________ #
 
@@ -228,25 +230,25 @@ bind . <F5> {.b2 invoke}
 ::baltip::tip .l "Calls a popup tearoff menu.\nThis tip is switched by the button\nto an alert/message."
 ::baltip::tip .b2 "Displays a message at top right corner, having\
   \ncoordinates set with \"-geometry $geo\" option."
-::baltip::tip .status "Status bar for tips." -command {::Status {%t}}
+::baltip::tip .status "Status bar for tips." -command {::Status %t}
 ::baltip::tip .popupMenu "Sets new colors of all tips" -index 1
 ::baltip::tip .popupMenu "Restores colors of all tips" -index 2
-::baltip::tip .menu "File actions" -index 0 -command {::Status {%t}}
-::baltip::tip .menu "Help actions" -index 1 -command {::Status {%t}}
-::baltip::tip .menu.file "Opens a file\n(stub)" -index 0 -command {::Status {%t}}
-::baltip::tip .menu.file "Creates a file\n(stub)" -index 1 -command {::Status {%t}}
-::baltip::tip .menu.file "Saves a file\n(stub)" -index 2 -command {::Status {%t}}
-::baltip::tip .menu.file "Shows a balloon\nat right top corner" -index 4 -command {::Status {%t}}
-::baltip::tip .menu.file "Closes the test" -index 6 -command {::Status {%t}}
-::baltip::tip .menu.help "Info on the package\ndisplayed in terminal" -index 0 -command {::Status {%t}}
+::baltip::tip .menu "File actions" -index 0 -command {::Status %t}
+::baltip::tip .menu "Help actions" -index 1 -command {::Status %t}
+::baltip::tip .menu.file "Opens a file\n(stub)" -index 0 -command {::Status %t}
+::baltip::tip .menu.file "Creates a file\n(stub)" -index 1 -command {::Status %t}
+::baltip::tip .menu.file "Saves a file\n(stub)" -index 2 -command {::Status %t}
+::baltip::tip .menu.file "Shows a balloon\nat right top corner" -index 4 -command {::Status %t}
+::baltip::tip .menu.file "Closes the test" -index 6 -command {::Status %t}
+::baltip::tip .menu.help "Info on the package\ndisplayed in terminal" -index 0 -command {::Status %t}
 ::baltip::tip .t "There are two tags\nwith their own tips." -under 0
 ::baltip::tip .t "1st tag's tip!" -tag UnderLine1
 ::baltip::tip .t "2nd tag's tip!" -tag UnderLine2
 ::baltip::tip .cb "Switches all tips on/off\nexcept for balloons with \"-on yes\"."
 ::baltip::tip .lb {::LbxTip %i}
 ::baltip::tip .tre {::TreTip %i %c}   ;# per line & column
-#::baltip::tip .lb {Listbox %i} -command {::SomeProc {%t}}
-#::baltip::tip .tre {Treeview %i %c} -command {::SomeProc {%t}}   ;# Fire some proc
+#::baltip::tip .lb {Listbox %i} -command {::SomeProc %t}
+#::baltip::tip .tre {Treeview %i %c} -command {::SomeProc %t}   ;# Fire some proc
 #::baltip::tip .tre {::TreTipId %i}   ;# per line
 #::baltip::tip .tre {::TreTipC %c}   ;# per column
 #::baltip::tip . "Testing tip for . path:\nsort of application tip.\n\nNot of much taste, though."

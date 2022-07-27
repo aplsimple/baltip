@@ -1,9 +1,20 @@
 # LAST CHANGES:
 
 
+Version `1.4.0 (24 Jul'22)`
+
+  - CHANGE: %t wildcard of -command option needs no outer {}
+  - CHANGE: baltip::hide: no need to call *Command*
+
+
+Version `1.3.9 (21 Jul'22)`
+
+  - NEW   : -shiftX, -shiftY options
+
+
 Version `1.3.8 (20 Jul'22)`
 
-  - CHANGE: -command option: resulting text defines the tip's exposition
+  - CHANGE: in -command option: resulting text defines the tip's exposition
 
 
 Version `1.3.7 (1 Jun'22)`
