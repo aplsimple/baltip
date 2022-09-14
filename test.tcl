@@ -196,7 +196,7 @@ $m add command -label \
   "Global settings: -fg $::fg0 -bg $::bg0 -relief solid -alpha 1.0" -command " \
   ::baltip config -fg $::fg0 -bg $::bg0 -global yes -relief solid -alpha 1.0; \
   ::Status {Restored colors of all tips} -font TkTooltipFont"
-bind .l <Button-3> {tk_popup .popupMenu %X %Y}
+bind .l <Button> {tk_popup .popupMenu %X %Y}
 
 menu .menu -tearoff 0
 
@@ -242,8 +242,8 @@ bind . <F5> {.b2 invoke}
 ::baltip::tip .menu.file "Closes the test" -index 6 -command {::Status %t}
 ::baltip::tip .menu.help "Info on the package\ndisplayed in terminal" -index 0 -command {::Status %t}
 ::baltip::tip .t "There are two tags\nwith their own tips." -under 0
-::baltip::tip .t "1st tag's tip!" -tag UnderLine1
-::baltip::tip .t "2nd tag's tip!" -tag UnderLine2
+::baltip::tip .t "1st tag's tip!" -tag UnderLine1 -under -16
+::baltip::tip .t "2nd tag's tip!" -tag UnderLine2 -under -16
 ::baltip::tip .cb "Switches all tips on/off\nexcept for balloons with \"-on yes\"."
 ::baltip::tip .lb {::LbxTip %i}
 ::baltip::tip .tre {::TreTip %i %c}   ;# per line & column
@@ -252,7 +252,8 @@ bind . <F5> {.b2 invoke}
 #::baltip::tip .tre {::TreTipId %i}   ;# per line
 #::baltip::tip .tre {::TreTipC %c}   ;# per column
 #::baltip::tip . "Testing tip for . path:\nsort of application tip.\n\nNot of much taste, though."
-
+::baltip config .b -fg #f0f -font {-size 9} -text "Hello\nmy dear!" ;# check config
+#puts [::baltip cget .b]
 # ____________________________________ EOF ___________________________________ #
 
 catch {source [file join ../transpops transpops.tcl]}

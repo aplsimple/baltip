@@ -1,6 +1,13 @@
 # LAST CHANGES:
 
 
+Version `1.4.1 (14 Sep'22)`
+
+  - NEW   : for a widget: baltip::configure w -opt val ?-opt val?
+  - NEW   : for a widget: baltip::cget w -opt
+  - CHANGE: -pause option: default 1000 (1sec.) instead of 600
+
+
 Version `1.4.0 (24 Jul'22)`
 
   - CHANGE: %t wildcard of -command option needs no outer {}
