@@ -149,6 +149,12 @@ When you click on a widget with its tip being displayed, the tip is hidden. It i
 
       ::baltip::repaint widgetpath
 
+To show a tip under the mouse pointer, e.g. on clicking, timeout, processing etc.:
+
+      ::baltip::show text ?options?
+
+## Some special tips
+
 The "text" for *listbox* can contain %i wildcard - and in such cases the text means a callback receiving a current index of item to tip:
 
       proc ::lbxTip {idx} {
@@ -322,7 +328,7 @@ Also, you can test *baltip* with *test2_pave.tcl* of [apave package](https://chi
 
 The *baltip* package has been developed with help of these kind people:
 
-  * [Nicolas Bats](https://github.com/sl1200mk2) prompted to add canvas tags' tips and tested *baltip* in MacOS
+  * [Nicolas Bats](https://github.com/sl1200mk2) prompted to add canvas tags' tips, baltip::show procedure and tested *baltip* in MacOS
 
   * [Csaba Nemethi](https://www.nemethi.de/) sent several bug fixes and advices, especially on listbox, treeview and menu tips
 

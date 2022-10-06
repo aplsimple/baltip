@@ -1,6 +1,12 @@
 # LAST CHANGES:
 
 
+Version `1.4.2 (6 Oct'22)`
+
+  - BUGFIX: baltip::cget to return {} on a widget without a tip
+  - NEW   : baltip::show to show tips on click, timer etc. (not on hovering widgets)
+
+
 Version `1.4.1 (14 Sep'22)`
 
   - NEW   : for a widget: baltip::configure w -opt val ?-opt val?

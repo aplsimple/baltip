@@ -50,6 +50,11 @@ proc ::butComm {} {
   if {$::ttt>7} {set ::ttt -2}
 }
 #_______________________
+proc ::but1Comm {} {
+  ::baltip show "This tip is displayed only on clicking!\nNo matter other tips are enabled or not." -pause 500 -fade 500 -per10 1000
+  puts "::but1Comm to be continued..."
+}
+#_______________________
 
 proc ::chbComm {}  {
     puts "all tips [if $::on {set _ enabled} {set _ disabled}]"
@@ -125,6 +130,7 @@ image create photo TEST_TCL_IMAGE2 -data $warnimg
 # _____________________________________ Widgets _____________________________________ #
 
 button .b -text Hello -command ::butComm
+ttk::button .b1 -text {On click} -command ::but1Comm
 
 set geo +999999+85  ;# 999999 to get it the most right
 set alpha 0.5
@@ -174,7 +180,7 @@ label .status -relief sunken -anchor w -width 31
 
 # _____________________________________ Pack _____________________________________ #
 
-pack .b .l .b2
+pack .b .b1 .l .b2
 pack .t -expand 1 -fill x
 pack .lb -expand 1 -fill x
 pack .tre -expand 1 -fill both
