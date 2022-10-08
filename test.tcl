@@ -51,7 +51,12 @@ proc ::butComm {} {
 }
 #_______________________
 proc ::but1Comm {} {
-  ::baltip show "This tip is displayed only on clicking!\nNo matter other tips are enabled or not." -pause 500 -fade 500 -per10 1000
+  set t " is displayed only on clicking!\nNo matter other tips are enabled or not."
+  if 1 {
+    ::baltip showTip .b1 Tip$t -alpha 0.8 -per10 1000
+  } else {
+    ::baltip showBalloon Balloon$t -geometry +9999+1 -font {-size 15} -alpha 0.8
+  }
   puts "::but1Comm to be continued..."
 }
 #_______________________

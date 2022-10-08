@@ -1,4 +1,4 @@
-package ifneeded baltip 1.4.2 [list source [file join $dir baltip.tcl]]
+package ifneeded baltip 1.5 [list source [file join $dir baltip.tcl]]
 
 namespace eval ::baltip {
   variable _ruff_preamble {
@@ -149,13 +149,15 @@ To update a tip's text and options:
 
       ::baltip::update widgetpath text ?options?
 
+To show a tip for a widget that has no "normal" tip, still needs a tip (e.g. on clicking):
+
+      ::baltip::showTip path text ?options?
+
+By default, `::baltip::showTip` displays the tip under the mouse pointer. At that it regards `-geometry` option and ignores `-under, -shiftX, -shiftY` options.
+
 When you click on a widget with its tip being displayed, the tip is hidden. It is the default behavior of *baltip*, but sometimes you need to re-display the hidden tip. If the widget is a button, you can include the following command in `-command` of the button:
 
       ::baltip::repaint widgetpath
-
-To show a tip under the mouse pointer, e.g. on clicking, timeout, processing etc.:
-
-      ::baltip::show text ?options?
 
 ## Some special tips
 
@@ -220,6 +222,12 @@ For example:
       set geom "+([expr {$w+$x}]-W-4)+$y"
       set text "The balloon at the right edge of the window"
       ::baltip tip .win $text -geometry $geom -pause 2000 -fade 2000
+
+To show a balloon under the mouse pointer, e.g. on clicking, timeout, processing etc., the following call is used:
+
+      ::baltip::showBalloon text ?options?
+
+By default, `::baltip::showBalloon` displays the balloon under the mouse pointer. At that it regards `-geometry` option and ignores `-under, -shiftX, -shiftY` options.
 
 
 ## Command
