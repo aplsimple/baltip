@@ -1,6 +1,16 @@
 # LAST CHANGES:
 
 
+Version `1.5.1 (18 Oct'22)`
+
+  - NEW   : baltip::clear unsets my::ttdata, to initialize tips on a widget
+
+
+Version `1.5 (6 Oct'22)`
+
+  - NEW   : baltip::showTip to show tips, baltip::showBalloon to show balloons at pointer
+
+
 Version `1.4.2 (6 Oct'22)`
 
   - BUGFIX: baltip::cget to return {} on a widget without a tip
