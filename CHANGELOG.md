@@ -1,6 +1,13 @@
 # LAST CHANGES:
 
 
+Version `1.5.2 (1 Mar'23)`
+
+  - NEW   : -ontop option: if yes, a tip is topmost above other windows
+  - CHANGE: for balloon: clicking hides it, not moving
+  - CHANGE: winfo vrootwidth/vrootheight, checking x and y >= 0
+
+
 Version `1.5.1 (18 Oct'22)`
 
   - NEW   : baltip::clear unsets my::ttdata, to initialize tips on a widget
