@@ -297,8 +297,7 @@ Below are listed the *baltip* options that are set with `tip` and `configure` an
  * `-image` - image option;
  * `-compound` - compound option;
  * `-relief` - relief option;
- * `-bell` - if true, rings at displaying;
- * `-ontop` - if true, a tip is topmost above other windows.
+ * `-bell` - if true, rings at displaying.
 
 The following options are special:
 
