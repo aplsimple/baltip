@@ -1,6 +1,16 @@
 # LAST CHANGES:
 
 
+Version `1.5.4 (23 Sep'23)`
+
+  - BUGFIX: *-geometry* in baltip::repaint
+
+
+Version `1.5.3 (21 Sep'23)`
+
+  - NEW   : *-geometry* in baltip::showBalloon's args
+
+
 Version `1.5.2 (1 Mar'23)`
 
   - NEW   : -ontop option: if yes, a tip is topmost above other windows
