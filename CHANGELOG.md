@@ -1,11 +1,11 @@
 # LAST CHANGES:
 
 
-Version `1.5.5 (16 Nov'23)`
+Version `1.6.0 (22 Nov'23)`
 
-  - NEW   : with balloons shown, other tips are allowed
+  - NEW   : *-eternal 1* option to make tips "eternal"
+  - NEW   : with "eternal" balloons shown, other tips are allowed
   - CHANGE: hide balloons with clicks only
-  - CHANGE: apply *-alpha* to tips with *-per10 0* ("eternal")
 
 
 Version `1.5.4 (23 Sep'23)`
