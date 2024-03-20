@@ -11,9 +11,13 @@ package require Tk
 
 # ____________________________________ auto_path ______________________________________ #
 
-cd [file dirname [info script]]
-lappend auto_path .
-package require baltip
+catch {source [file join ../transpops transpops.tcl]}
+catch {::transpops::run ../transpops/demos/baltip/transpops.txt . {} white #055328}
+
+set baltipdir [file dirname [info script]]
+cd $baltipdir
+set auto_path [linsert $auto_path 0 $baltipdir]
+puts baltip\ v[package require baltip]
 
 # _____________________________________ Callbacks _____________________________________ #
 
@@ -146,11 +150,11 @@ set ::fg0 $::fg
 set ::bg0 $::bg
 set ::fg1 white
 set ::bg1 black
-button .b2 -text "Balloon at $geo" -command {::baltip tip "" \
+button .b2 -text "Balloon at $geo" -command {::baltip tip . \
   "It's a stand-alone balloon\nto view in black & white \
   \nbold font and $alpha opacity." -alpha $alpha -fg white -bg black \
-  -font {-weight bold -size 11} -per10 1400 -pause 1500 -fade 1500 \
-  -geometry $geo -bell yes -on yes -padding 2 -relief raised -image TEST_TCL_IMAGE1}
+  -font {-weight bold -size 11} -per10 1000 -pause 1000 -fade 1000 \
+  -geometry $geo -bell yes -padding 2 -relief raised -image TEST_TCL_IMAGE1}
 
 label .l -text "Click me (tearoff popup)"
 
@@ -268,6 +272,3 @@ bind . <F5> {.b2 invoke}
 ::baltip config .b -fg #f0f -font {-size 9} -text "Hello\nmy dear!" ;# check config
 #puts [::baltip cget .b]
 # ____________________________________ EOF ___________________________________ #
-
-catch {source [file join ../transpops transpops.tcl]}
-catch {::transpops::run ../transpops/demos/baltip/transpops.txt {<Alt-t> <Alt-y>} . white #055328}
