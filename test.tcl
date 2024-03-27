@@ -153,8 +153,9 @@ set ::bg1 black
 button .b2 -text "Balloon at $geo" -command {::baltip tip . \
   "It's a stand-alone balloon\nto view in black & white \
   \nbold font and $alpha opacity." -alpha $alpha -fg white -bg black \
-  -font {-weight bold -size 11} -per10 1000 -pause 1000 -fade 1000 \
-  -geometry $geo -bell yes -padding 2 -relief raised -image TEST_TCL_IMAGE1}
+  -font {-weight bold -size 11} -per10 1000 -eternal 1 -pause 1000 -fade 1000 \
+  -geometry $geo -bell yes -padding 2 -relief raised -image TEST_TCL_IMAGE1 -focus .b2}
+button .b3 -text "Destroy balloon at $geo" -command {::baltip hide . yes}
 
 label .l -text "Click me (tearoff popup)"
 
@@ -191,7 +192,7 @@ label .status -relief sunken -anchor w -width 31
 
 # _____________________________________ Pack _____________________________________ #
 
-pack .b .b1 .l .b2
+pack .b .b1 .l .b2 .b3
 pack .t -expand 1 -fill x
 pack .lb -expand 1 -fill x
 pack .tre -expand 1 -fill both

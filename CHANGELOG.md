@@ -1,6 +1,12 @@
 # LAST CHANGES:
 
 
+Version `1.6.2 (27 Mar'24)`
+
+  - NEW   : *-focus $w* option to focus a widget after tip show (thanks to Nicolas Bats)
+  - CHANGE: *-text {}* works for notebook tab, canvas tag, text tag
+
+
 Version `1.6.0 (22 Nov'23)`
 
   - NEW   : *-eternal 1* option to make tips "eternal"
