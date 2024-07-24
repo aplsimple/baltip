@@ -1,9 +1,10 @@
 # LAST CHANGES:
 
 
-Version `1.6.2 (27 Mar'24)`
+Version `1.6.2 (24 Jul'24)`
 
   - NEW   : *-focus $w* option to focus a widget after tip show (thanks to Nicolas Bats)
+  - CHANGE: my::Show wrapped in *catch*
   - CHANGE: *-text {}* works for notebook tab, canvas tag, text tag
 
 
