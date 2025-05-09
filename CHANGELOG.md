@@ -1,6 +1,11 @@
 # LAST CHANGES:
 
 
+Version `1.6.3 (9 May'25)`
+
+  - NEW   : *-onmouse com* option to bind mouse clicks to command (inc. %b etc.)
+
+
 Version `1.6.2 (24 Jul'24)`
 
   - NEW   : *-focus $w* option to focus a widget after tip show (thanks to Nicolas Bats)
