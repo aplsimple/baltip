@@ -150,7 +150,7 @@ set ::fg0 $::fg
 set ::bg0 $::bg
 set ::fg1 white
 set ::bg1 black
-button .b2 -text "Balloon at $geo" -command {::baltip tip . \
+button .b2 -text "Balloon at $geo" -command {::baltip showBalloon \
   "It's a stand-alone balloon\nto view in black & white \
   \nbold font and $alpha opacity." -alpha $alpha -fg white -bg black \
   -font {-weight bold -size 11} -per10 1000 -eternal 1 -pause 1000 -fade 1000 \
