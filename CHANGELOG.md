@@ -1,6 +1,13 @@
 # LAST CHANGES:
 
 
+Version `1.6.4 (3 Dec'25)`
+
+  - BUGFIX: *-command* option for notebook tabs not working
+  - NEW   : *-balloonwindow* option for *showBalloon* to set a parent path for the balloon
+  - CHANGE: README.md
+
+
 Version `1.6.3 (9 May'25)`
 
   - NEW   : *-onmouse com* option to bind mouse clicks to command (inc. %b etc.)
