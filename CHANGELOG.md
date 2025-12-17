@@ -1,6 +1,13 @@
 # LAST CHANGES:
 
 
+Version `1.6.5 (17 Dec'25)`
+
+  - BUGFIX: baltip::DoShow: ugly ttdata(REGISTERED)
+  - NEW   : *showBalloon* can mimic baltip::tip ("tip $win $text ...")
+  - CHANGE: README.md
+
+
 Version `1.6.4 (3 Dec'25)`
 
   - BUGFIX: *-command* option for notebook tabs not working
