@@ -377,6 +377,8 @@ The *baltip* package has been developed with help of these kind people:
 
   * [Csaba Nemethi](https://www.nemethi.de/) sent several bug fixes and advices, especially on listbox, treeview and menu tips
 
+  * [Alexis Martin](https://en.wikipedia.org/wiki/Argentina) prompted to add error messages and helped to detect some issues
+
 # Links
 
   * [Source at chiselapp](https://chiselapp.com/user/aplsimple/repository/baltip/download) (baltip.zip)

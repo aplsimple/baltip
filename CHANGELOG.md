@@ -1,6 +1,12 @@
 # LAST CHANGES:
 
 
+Version `1.6.6 (24 Dec'25)`
+
+  - NEW   : PutError: puts errors at `catch` of reasonable cases (thanks to Alexis)
+  - DELETE: calling a command of `-command` option at hiding tips (thanks to Alexis)
+
+
 Version `1.6.5 (17 Dec'25)`
 
   - BUGFIX: baltip::DoShow: ugly ttdata(REGISTERED)
