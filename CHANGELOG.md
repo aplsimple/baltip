@@ -1,6 +1,12 @@
 # LAST CHANGES:
 
 
+Version `1.6.7 (21 Jan'26)`
+
+  - NEW   : CheckIfInteger: to check errors of `listbox & treeview` (thanks to Alexis)
+  - CHANGE: `paths` tipo (thanks to Alexis)
+
+
 Version `1.6.6 (24 Dec'25)`
 
   - NEW   : PutError: puts errors at `catch` of reasonable cases (thanks to Alexis)
