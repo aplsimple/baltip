@@ -373,7 +373,7 @@ Also, you can test *baltip* with *test2_pave.tcl* of [apave package](https://chi
 
 The *baltip* package has been developed with help of these kind people:
 
-  * [Nicolas Bats](https://github.com/sl1200mk2) prompted to add canvas tags' tips, baltip::show procedure and tested *baltip* in MacOS
+  * [Nicolas Bats](https://github.com/sl1200mk2) prompted to add canvas tags' tips, baltip::show procedure and tested *baltip* in MacOS; also, he was the contributor to release 1.7.0 version
 
   * [Csaba Nemethi](https://www.nemethi.de/) sent several bug fixes and advices, especially on listbox, treeview and menu tips
 

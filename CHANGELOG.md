@@ -1,6 +1,11 @@
 # LAST CHANGES:
 
 
+Version `1.7.0 (11 Nov'26)`
+
+  - NEW   : multiple improvements by [Nicolas Bats](https://github.com/sl1200mk2)
+
+
 Version `1.6.7 (21 Jan'26)`
 
   - NEW   : CheckIfInteger: to check errors of `listbox & treeview` (thanks to Alexis)
